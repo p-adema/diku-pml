@@ -2,7 +2,7 @@
 */mnist_data/
 *.png
 *.jpg
-*.pt
+#*.pt
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
