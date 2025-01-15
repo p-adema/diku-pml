@@ -5,9 +5,10 @@ from typing import Callable, Literal
 import torch
 import torch.nn as nn
 
-
-# This UNET-style prediction model was originally included as part of the Score-based generative modelling tutorial
-# by Yang Song et al: https://colab.research.google.com/drive/120kYYBOVa1i0TD85RjlEkFjaWDxSFUx3?usp=sharing
+# This UNET-style prediction model was originally
+# included as part of the Score-based generative modelling tutorial
+# by Yang Song et al:
+# https://colab.research.google.com/drive/120kYYBOVa1i0TD85RjlEkFjaWDxSFUx3?usp=sharing
 
 
 class GaussianFourierProjection(nn.Module):
@@ -233,7 +234,8 @@ class DDPM(nn.Module):
         super().__init__()
 
         # Normalize time input before evaluating neural network
-        # Reshape input into image format and normalize time value before sending it to network model
+        # Reshape input into image format and normalize time value before sending it to
+        # network model
         self._network = network
 
         # Total number of time steps
@@ -273,7 +275,8 @@ class DDPM(nn.Module):
     def forward_diffusion(self, x0, t, epsilon):
         """
         q(x_t | x_0)
-        Forward diffusion from an input datapoint x0 to an xt at timestep t, provided a N(0,1) noise sample epsilon.
+        Forward diffusion from an input datapoint x0 to an xt at timestep t, provided a
+        N(0,1) noise sample epsilon.
         Note that we can do this operation in a single step
 
         Parameters
@@ -299,7 +302,8 @@ class DDPM(nn.Module):
     def reverse_diffusion(self, xt, t, epsilon):
         """
         p(x_{t-1} | x_t)
-        Single step in the reverse direction, from x_t (at timestep t) to x_{t-1}, provided a N(0,1) noise epsilon.
+        Single step in the reverse direction, from x_t (at timestep t) to x_{t-1},
+        provided a N(0,1) noise epsilon.
 
         Parameters
         ----------
@@ -378,14 +382,17 @@ class DDPM(nn.Module):
             t = torch.randint(1, self.max_t, (b_size, 1)).to(x0.device)
             t_weights = torch.ones_like(t)
         elif self.reduce_variance_by == "low-discrepency":
-            # Remove last, since it's equal under modulus. Add extra one to compensate rounding at start and end
+            # Remove last, since it's equal under modulus. Add extra one to compensate
+            # rounding at start and end
             ts_base = torch.linspace(1, self.max_t + 1, b_size + 1)[:-1]
             # Random addition between 0 and the step size of ts_base
             ts_offset = torch.rand_like(ts_base) * ts_base[1]
-            # Taking a t value from a random index, yields a marginal distribution that is uniform over the reals [1,
-            # max_t+1). Taking the floor, yields a marginal distribution that is unfirom over the integers [1,
-            # max_t] Clamp to ensure floating point errors don't cause out-of-bounds Unlike "Variational Diffusion
-            # Models", individual positions (e.g. the first t) are not uniformly distributed, this could be sovled
+            # Taking a t value from a random index, yields a marginal distribution that
+            # is uniform over the reals [1, max_t+1). Taking the floor, yields a
+            # marginal distribution that is unfirom over the integers [1, max_t]
+            # Clamp to ensure floating point errors don't cause out-of-bounds
+            # Unlike "Variational Diffusion Models", individual positions
+            # (e.g. the first t) are not uniformly distributed, this could be sovled
             # with a random permutation, but that is needless work.
             t = (
                 (ts_base + ts_offset)
