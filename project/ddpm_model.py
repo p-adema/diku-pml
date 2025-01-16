@@ -431,10 +431,13 @@ class DDPM(nn.Module):
                 ).view((b_size, 1))
                 t_weights = torch.ones_like(t)
             else:
-                t = torch.randint(1, self.max_t, (b_size, 1)).to(x0.device)
                 weights = torch.sqrt(self.imps_hist.mean(dim=1)).to(x0.device)
+                norm_weights = (weights / weights.sum()) * b_size
+                t = (
+                    torch.multinomial(norm_weights, b_size, replacement=True) + 1
+                ).reshape((b_size, 1))
                 if self.reduce_variance_by == "importance-sampling":
-                    weights = (weights / weights.sum()) * b_size
+                    weights = norm_weights
 
                 t_weights = weights[t.view(-1)].view_as(t)
         else:
